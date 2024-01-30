@@ -7,7 +7,7 @@ function DisplayTodo(props) {
             <h1>Display Todo</h1>
             {displayTodoItem.map((item, index) => {
                 return (<div key={index}>
-                    {item.title}-{item.title2}-{item.desc}
+                    {item.title}-{item.text}-{item.desc}
                 </div>)
             })}
         </div>
