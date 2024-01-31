@@ -1,11 +1,15 @@
 import './App.css';
 import DisplayTodo from './component/DisplayTodo';
 import TodoList from './component/TodoList';
+import LoginPage from './fixedComponent/LoginPage';
+import SignUpPage from './fixedComponent/SignUpPage';
 
 function App() {
   return (
     <div className="App">
-      <TodoList />
+      <SignUpPage />
+      {/* <LoginPage /> */}
+      {/* <TodoList /> */}
     </div>
   );
 }
