@@ -33,9 +33,11 @@ function TodoList() {
     let copyTodoArr = [...disTodo];
     copyTodoArr.push(newTodo);
     setDistodo(copyTodoArr);
-    todoData.title = "";
-    todoData.text = "";
-    todoData.desc = "";
+    setTodoData({
+      title: "",
+      text: "",
+      desc: "",
+    });
   };
 
   return (

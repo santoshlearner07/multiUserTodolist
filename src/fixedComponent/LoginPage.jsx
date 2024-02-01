@@ -1,5 +1,6 @@
 import React from "react";
 import { Col, Container, Form, Row, Button, FormGroup } from "react-bootstrap";
+import { NavLink } from "react-router-dom";
 
 function LoginPage() {
   const colStyle = {
@@ -17,7 +18,11 @@ function LoginPage() {
             <hr />
             <Form>
               <Form.Group className="mb-3">
-                <Form.Control style={{ borderRadius: "35px" }} type="email" placeholder="Enter email..."/>
+                <Form.Control
+                  style={{ borderRadius: "35px" }}
+                  type="email"
+                  placeholder="Enter email..."
+                />
                 <Form.Text className="text-muted">
                   We'll never share your email with anyone else.
                 </Form.Text>
@@ -52,9 +57,12 @@ function LoginPage() {
           <div>
             <p style={{ fontSize: "50px", fontWeight: "bold" }}>New Here?</p>
             <h3> Sign Up to create your own Todolist </h3>
-            <Button variant="light" style={{ borderRadius: "25px" }}>
-              Sign Up
-            </Button>
+            <NavLink to={"/signup"}>
+              {" "}
+              <Button variant="light" style={{ borderRadius: "25px" }}>
+                Sign Up
+              </Button>
+            </NavLink>
           </div>
         </Col>
       </Row>
