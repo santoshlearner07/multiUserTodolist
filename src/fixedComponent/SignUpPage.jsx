@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -18,6 +18,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 function SignUpPage() {
   const notify = () => toast.success("User Created!");
+  const userExist = () => toast.warning("User Exist!");
   const colStyle = {
     display: "flex",
     justifyContent: "center",
@@ -30,29 +31,47 @@ function SignUpPage() {
     password: "",
   });
 
+  const [userList, setUserList] = useState([]);
+
   const handleCreateUser = (event) => {
     const { name, value } = event.target;
     setUserDetails((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  useEffect(() => {
+    axios.get("http://localhost:8888/users").then((res) => {
+      setUserList(res.data);
+    });
+  }, [userList]);
+
+  const addUser = () => {
+    userList.map((item) => {
+      if (item.email === userDetails.email) {
+        userExist();
+      } else {
+        const userData = {
+          userId: userList.length + 1,
+          name: userDetails.name,
+          email: userDetails.email,
+          password: userDetails.password,
+        };
+        axios.post("http://localhost:8888/users", userData).then((res) => {
+          // console.log("User Created");
+          // console.log(res.status, res);
+          notify();
+        });
+        setUserDetails({
+          name: "",
+          email: "",
+          password: "",
+        });
+      }
+    });
+  };
+
   const handleSubmitUser = (e) => {
     e.preventDefault();
-    console.log(userDetails);
-    const userData = {
-      name: userDetails.name,
-      email: userDetails.email,
-      password: userDetails.password,
-    };
-    axios.post("http://localhost:8888/users", userData).then((res) => {
-      console.log("User Created");
-      console.log(res.status, res);
-      notify();
-    });
-    setUserDetails({
-      name: "",
-      email: "",
-      password: "",
-    });
+    addUser();
   };
 
   return (
