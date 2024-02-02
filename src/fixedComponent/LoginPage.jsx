@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Col, Container, Form, Row, Button, FormGroup } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { Col, Container, Form, Row, Button } from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 
 function LoginPage() {
@@ -10,7 +10,9 @@ function LoginPage() {
     justifyContent: "center",
     alignItems: "center",
   };
-  
+
+  const navigate = useNavigate();
+
   const userMatched = () => toast.success("User Logged In");
   const userNotMatched = () => toast.error("User/Password Incorrect");
 
@@ -39,6 +41,7 @@ function LoginPage() {
         item.password === loginDetails.password
       ) {
         userMatched();
+        navigate(`/user/${item.userId}/todo`);
       } else {
         userNotMatched();
       }

@@ -8,7 +8,7 @@ import {
   InputGroup,
   Row,
 } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
@@ -17,14 +17,14 @@ import ImgTodolist from "../assesst/ImgTodolist.jpg";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 function SignUpPage() {
-  const notify = () => toast.success("User Created!");
+  const userCreated = () => toast.success("User Created!");
   const userExist = () => toast.warning("User Exist!");
   const colStyle = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
   };
-
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
@@ -32,6 +32,7 @@ function SignUpPage() {
   });
 
   const [userList, setUserList] = useState([]);
+  const [checkUser, setCheckUser] = useState([]);
 
   const handleCreateUser = (event) => {
     const { name, value } = event.target;
@@ -42,31 +43,40 @@ function SignUpPage() {
     axios.get("http://localhost:8888/users").then((res) => {
       setUserList(res.data);
     });
-  }, [userList]);
-
+  }, []);
   const addUser = () => {
     userList.map((item) => {
-      if (item.email === userDetails.email) {
-        userExist();
-      } else {
-        const userData = {
-          userId: userList.length + 1,
-          name: userDetails.name,
-          email: userDetails.email,
-          password: userDetails.password,
-        };
-        axios.post("http://localhost:8888/users", userData).then((res) => {
-          // console.log("User Created");
-          // console.log(res.status, res);
-          notify();
-        });
-        setUserDetails({
-          name: "",
-          email: "",
-          password: "",
-        });
-      }
+      return checkUser.push(item.email);
     });
+    if (checkUser.indexOf(userDetails.email) > -1) {
+      userExist();
+      setUserDetails({
+        name: "",
+        email: "",
+        password: "",
+      });
+    } else {
+      const userData = {
+        userId: userList.length + 1,
+        name: userDetails.name,
+        email: userDetails.email,
+        password: userDetails.password,
+      };
+      axios.post("http://localhost:8888/users", userData)
+      .then((res) => {
+        console.log("User Created");
+        console.log(res.status, res);
+        userCreated();
+      });
+      setUserDetails({
+        name: "",
+        email: "",
+        password: "",
+      });
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
   };
 
   const handleSubmitUser = (e) => {

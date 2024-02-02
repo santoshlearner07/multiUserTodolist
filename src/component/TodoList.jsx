@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import DisplayTodo from "./DisplayTodo";
 import { Box, Button, TextField } from "@mui/material";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 // import { makeStyles } from "@material-ui/core/styles";
 
 function TodoList() {
@@ -10,6 +12,9 @@ function TodoList() {
   //     }
   // }
   // const classes = useStyle();
+
+  const { userId } = useParams();
+
   const [todoData, setTodoData] = useState({
     title: "",
     text: "",
@@ -21,14 +26,20 @@ function TodoList() {
     const { name, value } = event.target;
     setTodoData((prevData) => ({ ...prevData, [name]: value }));
   };
-
+  console.log(userId);
   const handleTodoList = (e) => {
     e.preventDefault();
     let newTodo = {
+      userId: userId,
+      todoId: disTodo.length + 1,
       title: todoData.title,
       text: todoData.text,
       desc: todoData.desc,
     };
+    axios.post("http://localhost:8888/todos", newTodo).then((res) => {
+      console.log("Todo added");
+      console.log(res.status, res);
+    });
     console.log(todoData);
     let copyTodoArr = [...disTodo];
     copyTodoArr.push(newTodo);
