@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DisplayTodo from "./DisplayTodo";
 import { Box, Button, TextField } from "@mui/material";
 import { useParams } from "react-router-dom";
@@ -6,12 +6,6 @@ import axios from "axios";
 // import { makeStyles } from "@material-ui/core/styles";
 
 function TodoList() {
-  // const useStyle = {
-  //     textField:{
-  //         margin:'2',
-  //     }
-  // }
-  // const classes = useStyle();
 
   const { userId } = useParams();
 
@@ -20,18 +14,37 @@ function TodoList() {
     text: "",
     desc: "",
   });
-  const [disTodo, setDistodo] = useState([]);
+  // const [disTodo, setDistodo] = useState([]);
+  const [tempTodoList,setTempTodoList] = useState([]);
+
 
   const handleChangeTodo = (event) => {
     const { name, value } = event.target;
     setTodoData((prevData) => ({ ...prevData, [name]: value }));
   };
-  console.log(userId);
+
+  useEffect(()=>{
+    axios.get(`http://localhost:8888/users/${userId}`)
+    .then((res)=>{
+      setTempTodoList(res.data)
+    })
+  },[tempTodoList])
+
+  //Temporary solution
+  const fetchdata=()=>{
+    axios.get(`http://localhost:8888/users/${userId}`)
+    .then((res)=>{
+      setTempTodoList(res.data)
+    })
+    console.log(tempTodoList)
+  }
+
+// console.log(tempTodoList);
   const handleTodoList = (e) => {
     e.preventDefault();
     let newTodo = {
       userId: userId,
-      todoId: disTodo.length + 1,
+      todoId: tempTodoList.length + 1,
       title: todoData.title,
       text: todoData.text,
       desc: todoData.desc,
@@ -40,10 +53,11 @@ function TodoList() {
       console.log("Todo added");
       console.log(res.status, res);
     });
-    console.log(todoData);
-    let copyTodoArr = [...disTodo];
-    copyTodoArr.push(newTodo);
-    setDistodo(copyTodoArr);
+    fetchdata();
+    // console.log(todoData);
+    // let copyTodoArr = [...disTodo];
+    // copyTodoArr.push(newTodo);
+    // setDistodo(copyTodoArr);
     setTodoData({
       title: "",
       text: "",
@@ -102,7 +116,7 @@ function TodoList() {
           Success
         </Button>
       </form>
-      <DisplayTodo data={disTodo} />
+      <DisplayTodo data={tempTodoList} />
     </Box>
   );
 }
