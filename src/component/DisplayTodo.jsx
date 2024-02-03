@@ -15,8 +15,6 @@ function DisplayTodo(props) {
   }, [displayTodoItem]);
 
   const handleSingleTodo = (data, index) => {
-    // console.log(data.todoId, data.userId, index);
-    // console.log("click")
     navigate(`/user/${data.userId}/${data.todoId}`)
   };
 

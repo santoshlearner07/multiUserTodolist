@@ -36,10 +36,8 @@ function TodoList() {
     .then((res)=>{
       setTempTodoList(res.data)
     })
-    console.log(tempTodoList)
   }
 
-// console.log(tempTodoList);
   const handleTodoList = (e) => {
     e.preventDefault();
     let newTodo = {
@@ -50,14 +48,9 @@ function TodoList() {
       desc: todoData.desc,
     };
     axios.post("http://localhost:8888/todos", newTodo).then((res) => {
-      console.log("Todo added");
       console.log(res.status, res);
     });
     fetchdata();
-    // console.log(todoData);
-    // let copyTodoArr = [...disTodo];
-    // copyTodoArr.push(newTodo);
-    // setDistodo(copyTodoArr);
     setTodoData({
       title: "",
       text: "",

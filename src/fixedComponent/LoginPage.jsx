@@ -41,7 +41,7 @@ function LoginPage() {
         item.password === loginDetails.password
       ) {
         userMatched();
-        navigate(`/user/${item.userId}/todo`);
+        navigate(`/user/${item.userId}`);
       } else {
         userNotMatched();
       }

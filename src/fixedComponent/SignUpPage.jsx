@@ -62,9 +62,7 @@ function SignUpPage() {
         email: userDetails.email,
         password: userDetails.password,
       };
-      axios.post("http://localhost:8888/users", userData)
-      .then((res) => {
-        console.log("User Created");
+      axios.post("http://localhost:8888/users", userData).then((res) => {
         console.log(res.status, res);
         userCreated();
       });
