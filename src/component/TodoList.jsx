@@ -28,7 +28,7 @@ function TodoList() {
     .then((res)=>{
       setTempTodoList(res.data)
     })
-  },[tempTodoList])
+  },[])
 
   //Temporary solution
   const fetchdata=()=>{
@@ -116,7 +116,9 @@ function TodoList() {
           Success
         </Button>
       </form>
-      <DisplayTodo data={tempTodoList} />
+      {/* <DisplayTodo data={tempTodoList} /> */}
+      <DisplayTodo />
+
     </Box>
   );
 }

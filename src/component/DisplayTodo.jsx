@@ -1,8 +1,25 @@
-import React from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import axios from "axios";
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 
 function DisplayTodo(props) {
-  let displayTodoItem = props.data;
+  const userId = useParams();
+  const navigate = useNavigate();
+  const [displayTodoItem, setDisplayTodoItem] = useState([]);
+  useEffect(() => {
+    axios.get(`http://localhost:8888/users/${userId.userId}`).then((res) => {
+      setDisplayTodoItem(res.data);
+    });
+  }, [displayTodoItem]);
+
+  const handleSingleTodo = (data, index) => {
+    // console.log(data.todoId, data.userId, index);
+    // console.log("click")
+    navigate(`/user/${data.userId}/${data.todoId}`)
+  };
+
   return (
     <Container>
       <h1>Display Todo</h1>
@@ -10,12 +27,20 @@ function DisplayTodo(props) {
         {displayTodoItem.map((item, index) => {
           return (
             <Col key={index} className="mb-4">
-              <Card>
+              <Card
+                style={{ padding: "5px",cursor:"pointer" }}
+                onClick={()=>handleSingleTodo(item, index)}
+                               
+              >
                 <Card.Title>{item.title}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">
                   {item.text}
                 </Card.Subtitle>
                 <Card.Text>{item.desc}</Card.Text>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
+                </div>
               </Card>
             </Col>
           );
