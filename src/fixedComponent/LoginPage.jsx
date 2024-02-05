@@ -42,6 +42,8 @@ function LoginPage() {
       ) {
         userMatched();
         navigate(`/user/${item.userId}`);
+        localStorage.setItem('user',JSON.stringify(item.name))
+        localStorage.setItem('_id',JSON.stringify(item._id))
       } else {
         userNotMatched();
       }

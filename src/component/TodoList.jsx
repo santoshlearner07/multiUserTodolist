@@ -8,7 +8,7 @@ import axios from "axios";
 function TodoList() {
 
   const { userId } = useParams();
-
+  const tempUniqueTodoId = [];
   const [todoData, setTodoData] = useState({
     title: "",
     text: "",
@@ -17,6 +17,10 @@ function TodoList() {
   // const [disTodo, setDistodo] = useState([]);
   const [tempTodoList,setTempTodoList] = useState([]);
 
+  function randomNumberInRange() {
+    const uid = Math.floor(Math.random()*100000000) + 1;
+    return tempUniqueTodoId.push(uid);
+  }
 
   const handleChangeTodo = (event) => {
     const { name, value } = event.target;
@@ -39,10 +43,11 @@ function TodoList() {
   }
 
   const handleTodoList = (e) => {
+    randomNumberInRange();
     e.preventDefault();
     let newTodo = {
       userId: userId,
-      todoId: tempTodoList.length + 1,
+      todoId: tempUniqueTodoId[0],
       title: todoData.title,
       text: todoData.text,
       desc: todoData.desc,
@@ -71,7 +76,9 @@ function TodoList() {
       noValidate
       autoComplete="off"
     >
-      <h1>Todo List</h1>
+      <h1>{JSON.parse(localStorage.getItem('user'))}</h1>
+      <br/>
+      <h2>Todo List</h2>
       <form onSubmit={handleTodoList}>
         <TextField
           fullWidth
