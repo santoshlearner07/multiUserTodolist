@@ -9,10 +9,12 @@ import {
   Row,
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
-
+import PinIcon from "@mui/icons-material/Pin";
 import PersonIcon from "@mui/icons-material/Person";
 import EmailIcon from "@mui/icons-material/Email";
 import KeyIcon from "@mui/icons-material/Key";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import ImgTodolist from "../assesst/ImgTodolist.jpg";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,20 +26,42 @@ function SignUpPage() {
     justifyContent: "center",
     alignItems: "center",
   };
-  // const userApi = 'https://my-json-server.typicode.com/santoshlearner07/users_api'
   const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({
     name: "",
     email: "",
     password: "",
+    otp: "",
   });
+
+  const name = userDetails.name;
+  const email = userDetails.email;
+  const password = userDetails.password;
 
   const [userList, setUserList] = useState([]);
   const [checkUser, setCheckUser] = useState([]);
-
+  const tempUniqueNumb = [];
   const handleCreateUser = (event) => {
     const { name, value } = event.target;
     setUserDetails((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const [show, hide] = useState(false);
+  const showPass = () => {
+    hide(!show);
+  };
+
+  const [vOtp, setVOtp] = useState(false);
+  const showOtp = () => {
+    axios
+      .post("http://localhost:8888/postotp")
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    setVOtp(!vOtp);
   };
 
   useEffect(() => {
@@ -45,9 +69,16 @@ function SignUpPage() {
       setUserList(res.data);
     });
   }, []);
+
+  function randomNumberInRange() {
+    const uid = Math.floor(Math.random() * 1000000) + 1;
+    return tempUniqueNumb.push(uid);
+  }
+
   const addUser = () => {
+    randomNumberInRange();
     userList.map((item) => {
-      return checkUser.push(item.email);
+      return checkUser.push(item.email, item.userId);
     });
     if (checkUser.indexOf(userDetails.email) > -1) {
       userExist();
@@ -55,10 +86,11 @@ function SignUpPage() {
         name: "",
         email: "",
         password: "",
+        otp: "",
       });
     } else {
       const userData = {
-        userId: userList.length + 1,
+        userId: tempUniqueNumb[0],
         name: userDetails.name,
         email: userDetails.email,
         password: userDetails.password,
@@ -71,6 +103,7 @@ function SignUpPage() {
         name: "",
         email: "",
         password: "",
+        otp: "",
       });
       setTimeout(() => {
         navigate("/");
@@ -132,15 +165,39 @@ function SignUpPage() {
               </InputGroup.Text>
               <Form.Control
                 placeholder="Password"
-                type="password"
+                type={show ? "text" : "password"}
                 name="password"
                 value={userDetails.password}
                 onChange={handleCreateUser}
               />
+              <InputGroup.Text id="basic-addon1">
+                {" "}
+                <div onClick={showPass}>
+                  {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                </div>
+              </InputGroup.Text>
             </InputGroup>
 
+            {vOtp ? (
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1">
+                  {" "}
+                  <PinIcon />{" "}
+                </InputGroup.Text>
+                <Form.Control
+                  placeholder="Enter OTP"
+                  type="text"
+                  name="otp"
+                  value={userDetails.otp}
+                  onChange={handleCreateUser}
+                />
+              </InputGroup>
+            ) : (
+              ""
+            )}
+
             <ButtonGroup aria-label="Basic example" className="mb-3">
-              {userDetails.name && userDetails.email && userDetails.password ? (
+              {vOtp ? (
                 <Button
                   variant="success"
                   type="submit"
@@ -149,11 +206,15 @@ function SignUpPage() {
                   Submit
                 </Button>
               ) : (
-                <Button variant="warning" type="submit" disabled>
-                  Submit
+                <Button
+                  onClick={() => showOtp()}
+                  disabled={!(name && email && password)}
+                >
+                  Send Email
                 </Button>
               )}
             </ButtonGroup>
+
             <div>
               <h6 className="mb-3">
                 Already a User ? <NavLink to={"/"}>SignIn</NavLink>
