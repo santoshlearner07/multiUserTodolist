@@ -21,6 +21,8 @@ import { ToastContainer, toast } from "react-toastify";
 function SignUpPage() {
   const userCreated = () => toast.success("User Created!");
   const userExist = () => toast.warning("User Exist!");
+  const otpIncorrect = () => toast.dark("OTP incorrect!");
+
   const colStyle = {
     display: "flex",
     justifyContent: "center",
@@ -73,18 +75,21 @@ function SignUpPage() {
       axios
         .post("http://localhost:8888/handleotp",userData)
         .then((res) => {
-          console.log(res);
+          setCheckUser(res.data.otp);
         })
         .catch((err) => {
           console.log(err);
         });
-        
       setVOtp(!vOtp);
     }
   };
 
   const checkOTP = () => {
-    setVpassword(!vpassword);
+    if(userDetails.otp == checkUser){
+      setVpassword(!vpassword);
+    } else {
+      otpIncorrect();
+    }
   };
 
   useEffect(() => {
@@ -107,7 +112,7 @@ function SignUpPage() {
       password: userDetails.password,
     };
     axios.post("http://localhost:8888/users", userData).then((res) => {
-      console.log(res.status, res);
+      // console.log(res.status, res);
       userCreated();
     });
     setUserDetails({
