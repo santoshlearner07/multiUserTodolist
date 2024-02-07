@@ -40,28 +40,51 @@ function SignUpPage() {
 
   const [userList, setUserList] = useState([]);
   const [checkUser, setCheckUser] = useState([]);
+  const [show, hide] = useState(false);
+  const [vOtp, setVOtp] = useState(false);
+  const [vpassword, setVpassword] = useState(false);
+
   const tempUniqueNumb = [];
+
   const handleCreateUser = (event) => {
     const { name, value } = event.target;
     setUserDetails((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const [show, hide] = useState(false);
   const showPass = () => {
     hide(!show);
   };
 
-  const [vOtp, setVOtp] = useState(false);
   const showOtp = () => {
-    axios
-      .post("http://localhost:8888/postotp")
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
+    userList.map((item) => {
+      return checkUser.push(item.email, item.userId);
+    });
+    if (checkUser.indexOf(userDetails.email) > -1) {
+      userExist();
+      setUserDetails({
+        name: "",
+        email: "",
       });
-    setVOtp(!vOtp);
+    } else {
+      const userData = {
+        name: userDetails.name,
+        email: userDetails.email,
+      };
+      axios
+        .post("http://localhost:8888/handleotp",userData)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+      setVOtp(!vOtp);
+    }
+  };
+
+  const checkOTP = () => {
+    setVpassword(!vpassword);
   };
 
   useEffect(() => {
@@ -77,38 +100,25 @@ function SignUpPage() {
 
   const addUser = () => {
     randomNumberInRange();
-    userList.map((item) => {
-      return checkUser.push(item.email, item.userId);
+    const userData = {
+      userId: tempUniqueNumb[0],
+      name: userDetails.name,
+      email: userDetails.email,
+      password: userDetails.password,
+    };
+    axios.post("http://localhost:8888/users", userData).then((res) => {
+      console.log(res.status, res);
+      userCreated();
     });
-    if (checkUser.indexOf(userDetails.email) > -1) {
-      userExist();
-      setUserDetails({
-        name: "",
-        email: "",
-        password: "",
-        otp: "",
-      });
-    } else {
-      const userData = {
-        userId: tempUniqueNumb[0],
-        name: userDetails.name,
-        email: userDetails.email,
-        password: userDetails.password,
-      };
-      axios.post("http://localhost:8888/users", userData).then((res) => {
-        console.log(res.status, res);
-        userCreated();
-      });
-      setUserDetails({
-        name: "",
-        email: "",
-        password: "",
-        otp: "",
-      });
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    }
+    setUserDetails({
+      name: "",
+      email: "",
+      password: "",
+      otp: "",
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
 
   const handleSubmitUser = (e) => {
@@ -158,25 +168,6 @@ function SignUpPage() {
                 onChange={handleCreateUser}
               />
             </InputGroup>
-            <InputGroup className="mb-3">
-              <InputGroup.Text id="basic-addon1">
-                {" "}
-                <KeyIcon />{" "}
-              </InputGroup.Text>
-              <Form.Control
-                placeholder="Password"
-                type={show ? "text" : "password"}
-                name="password"
-                value={userDetails.password}
-                onChange={handleCreateUser}
-              />
-              <InputGroup.Text id="basic-addon1">
-                {" "}
-                <div onClick={showPass}>
-                  {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </div>
-              </InputGroup.Text>
-            </InputGroup>
 
             {vOtp ? (
               <InputGroup className="mb-3">
@@ -196,22 +187,50 @@ function SignUpPage() {
               ""
             )}
 
+            {vpassword ? (
+              <InputGroup className="mb-3">
+                <InputGroup.Text id="basic-addon1">
+                  {" "}
+                  <KeyIcon />{" "}
+                </InputGroup.Text>
+                <Form.Control
+                  placeholder="Password"
+                  type={show ? "text" : "password"}
+                  name="password"
+                  value={userDetails.password}
+                  onChange={handleCreateUser}
+                />
+                <InputGroup.Text id="basic-addon1">
+                  {" "}
+                  <div onClick={showPass}>
+                    {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </div>
+                </InputGroup.Text>
+              </InputGroup>
+            ) : (
+              ""
+            )}
+
             <ButtonGroup aria-label="Basic example" className="mb-3">
-              {vOtp ? (
-                <Button
-                  variant="success"
-                  type="submit"
-                  onClick={handleSubmitUser}
-                >
-                  Submit
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => showOtp()}
-                  disabled={!(name && email && password)}
-                >
+              {!vOtp ? (
+                <Button onClick={() => showOtp()} disabled={!(name && email)}>
                   Send Email
                 </Button>
+              ) : (
+                <div>
+                  {" "}
+                  {!vpassword ? (
+                    <Button onClick={() => checkOTP()}>Check OTP</Button>
+                  ) : (
+                    <Button
+                      variant="success"
+                      type="submit"
+                      onClick={handleSubmitUser}
+                    >
+                      Submit
+                    </Button>
+                  )}
+                </div>
               )}
             </ButtonGroup>
 
