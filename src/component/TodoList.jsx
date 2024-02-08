@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import DisplayTodo from "./DisplayTodo";
 import { Box, Button, TextField } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import axios from "axios";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { ToastContainer, toast } from "react-toastify";
+
 // import { makeStyles } from "@material-ui/core/styles";
 
 function TodoList() {
-
+  const userDeleted = () => toast.success("User Deleted");
+  const navigate = useNavigate();
   const { userId } = useParams();
   const tempUniqueTodoId = [];
   const [todoData, setTodoData] = useState({
@@ -15,10 +19,10 @@ function TodoList() {
     desc: "",
   });
   // const [disTodo, setDistodo] = useState([]);
-  const [tempTodoList,setTempTodoList] = useState([]);
+  const [tempTodoList, setTempTodoList] = useState([]);
 
   function randomNumberInRange() {
-    const uid = Math.floor(Math.random()*100000000) + 1;
+    const uid = Math.floor(Math.random() * 100000000) + 1;
     return tempUniqueTodoId.push(uid);
   }
 
@@ -27,20 +31,18 @@ function TodoList() {
     setTodoData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  useEffect(()=>{
-    axios.get(`http://localhost:8888/users/${userId}`)
-    .then((res)=>{
-      setTempTodoList(res.data)
-    })
-  },[])
+  useEffect(() => {
+    axios.get(`http://localhost:8888/users/${userId}`).then((res) => {
+      setTempTodoList(res.data);
+    });
+  }, []);
 
   //Temporary solution
-  const fetchdata=()=>{
-    axios.get(`http://localhost:8888/users/${userId}`)
-    .then((res)=>{
-      setTempTodoList(res.data)
-    })
-  }
+  const fetchdata = () => {
+    axios.get(`http://localhost:8888/users/${userId}`).then((res) => {
+      setTempTodoList(res.data);
+    });
+  };
 
   const handleTodoList = (e) => {
     randomNumberInRange();
@@ -63,6 +65,27 @@ function TodoList() {
     });
   };
 
+  const deleteUser =()=>{
+    axios.delete(`http://localhost:8888/users/${userId}`)
+    .then((res)=>{
+      console.log(res)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+    axios.delete(`http://localhost:8888/todos/${userId}`)
+    .then((res)=>{
+      console.log(res)
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+    userDeleted();
+    setTimeout(()=>{
+      navigate('/signup')
+    },3000)
+  }
+
   return (
     <Box
       sx={{
@@ -76,8 +99,11 @@ function TodoList() {
       noValidate
       autoComplete="off"
     >
-      <h1>{JSON.parse(localStorage.getItem('user'))}</h1>
-      <br/>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h1>{JSON.parse(localStorage.getItem("user"))}</h1>
+        <h6 style={{cursor:"pointer"}} onClick={()=>deleteUser()} ><DeleteIcon /></h6>
+      </div>
+      <br />
       <h2>Todo List</h2>
       <form onSubmit={handleTodoList}>
         <TextField
@@ -118,7 +144,7 @@ function TodoList() {
       </form>
       {/* <DisplayTodo data={tempTodoList} /> */}
       <DisplayTodo />
-
+      <ToastContainer />
     </Box>
   );
 }
